@@ -1,0 +1,22 @@
+{
+  "entities": [
+    {
+      "name": "User",
+      "fields": [
+        {"name": "id", "type": "INTEGER", "primary": true},
+        {"name": "firstName", "type": "STRING", "required": true},
+        {"name": "lastName", "type": "STRING", "required": true},
+        {"name": "email", "type": "STRING", "required": true, "unique": true}
+      ],
+      "operations": ["create", "read", "update", "delete"]
+    },
+    {
+      "name": "Course",
+      "fields": [
+        {"name": "id", "type": "INTEGER", "primary": true},
+        {"name": "title", "type": "STRING", "required": true}
+      ],
+      "operations": ["create", "read"]
+    }
+  ]
+}
