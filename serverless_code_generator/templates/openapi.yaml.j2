@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+paths:
+{% for table in model.tables %}  /{{ table.name }}s:
+    post:
+      summary: create {{ table.name }}
+      responses:
+        '201':
+          description: Created
+{% endfor %}

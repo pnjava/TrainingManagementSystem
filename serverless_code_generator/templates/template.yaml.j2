@@ -1,0 +1,9 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+{% for table in model.tables %}  {{ table.name|capitalize }}Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: services/{{ table.name }}/handler.create
+      Runtime: nodejs20.x
+{% endfor %}

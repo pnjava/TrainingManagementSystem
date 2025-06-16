@@ -1,0 +1,17 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+paths:
+  /trainings:
+    post:
+      summary: create training
+      responses:
+        '201':
+          description: Created
+  /trainers:
+    post:
+      summary: create trainer
+      responses:
+        '201':
+          description: Created
