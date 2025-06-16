@@ -1,0 +1,6 @@
+import { z } from 'zod';
+
+export const {{ table.name|capitalize }}Schema = z.object({
+{% for col in table.columns %}  {{ col.name }}: z.any(),
+{% endfor %}});
+export type {{ table.name|capitalize }} = z.infer<typeof {{ table.name|capitalize }}Schema>;

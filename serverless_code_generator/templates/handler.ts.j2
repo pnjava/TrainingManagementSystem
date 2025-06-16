@@ -1,0 +1,13 @@
+// {{ table.name }}/handler.ts (generated)
+import { db } from '@prs/core/db';
+import { buildResponse } from '@prs/core/http';
+import { {{ table.name|capitalize }}Schema } from './model';
+import * as custom from './custom';
+
+export const create = async (event) => {
+  const body = JSON.parse(event.body);
+  const data = {{ table.name|capitalize }}Schema.parse(body);
+  const [id] = await db('{{ table.name }}').insert(data).returning('id');
+  if (custom.afterCreate) await custom.afterCreate(id, data);
+  return buildResponse(201, { id });
+};
