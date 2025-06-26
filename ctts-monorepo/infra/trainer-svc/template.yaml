@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Trainer Service
+Tags:
+  Application: CTTS
+  Env: DevInt
+  Owner: BEA
+  DataGovernor: CDO
+  Compliance: Sec530
+  PII: No
+Globals:
+  Function:
+    Runtime: nodejs18.x
+    MemorySize: 256
+    Timeout: 10
+    Environment:
+      Variables:
+        TABLE: !Ref TrainerTable
+Resources:
+  TrainerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TrainerTable
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+          Value: CDO
+        - Key: Compliance
+          Value: Sec530
+        - Key: PII
+          Value: No
+  TrainerApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Name: trainer-api-dev
+      Cors: "*"
+  GetTrainersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handler.get
+      CodeUri: ../../services/trainer
+      Events:
+        GetTrainers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TrainerApi
+            Path: /trainers
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TrainerTable
+  ApproveTrainerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/approve.handler
+      CodeUri: ../../services/trainer
+      Events:
+        ApproveTrainer:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TrainerApi
+            Path: /trainers/{id}/approve
+            Method: put
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TrainerTable
+Outputs:
+  ApiUrl:
+    Value: !Sub https://${TrainerApi}.execute-api.${AWS::Region}.amazonaws.com/dev
+  TableName:
+    Value: !Ref TrainerTable

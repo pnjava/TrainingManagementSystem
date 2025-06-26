@@ -1,0 +1,14 @@
+trigger:
+- dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+- script: npm ci -w services/trainer -w services/admin
+- script: npx tsc -b services/trainer/tsconfig.json services/admin/tsconfig.json
+- publish: $(System.DefaultWorkingDirectory)
+  artifact: lambdas
