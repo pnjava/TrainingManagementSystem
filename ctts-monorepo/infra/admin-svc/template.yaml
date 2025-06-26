@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Admin Service
+Tags:
+  Application: CTTS
+  Env: DevInt
+  Owner: BEA
+  DataGovernor: CDO
+  Compliance: Sec530
+  PII: No
+Resources:
+  AdminApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Name: admin-api-dev
+      Cors: "*"
+  SummaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handler.handler
+      CodeUri: ../../services/admin
+      Events:
+        Summary:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AdminApi
+            Path: /dashboard/summary
+            Method: get
+  SubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: placeholder
+      SubnetIds: []
+Outputs:
+  ApiUrl:
+    Value: !Sub https://${AdminApi}.execute-api.${AWS::Region}.amazonaws.com/dev
