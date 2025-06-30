@@ -1,0 +1,14 @@
+name: Service Build
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci -w services/trainer -w services/admin
+      - run: npx eslint services --ext .ts
+      - run: npm test -w services/trainer -w services/admin -- --runInBand
+      - run: npx tsc -b services/trainer/tsconfig.json services/admin/tsconfig.json

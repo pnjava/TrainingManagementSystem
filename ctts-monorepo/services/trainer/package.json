@@ -1,0 +1,14 @@
+{
+  "name": "trainer-service",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-rds-data": "^3.0.0",
+    "@aws-lambda-powertools/logger": "^1.0.0"
+  }
+}

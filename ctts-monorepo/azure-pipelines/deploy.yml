@@ -1,0 +1,15 @@
+dependencies:
+- build
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+parameters:
+- name: stackName
+  type: string
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+- script: sam deploy -t infra/trainer-svc/template.yaml --stack-name ${{ parameters.stackName }} --no-confirm-changeset --region us-east-1
