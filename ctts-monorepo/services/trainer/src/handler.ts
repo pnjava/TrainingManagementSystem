@@ -11,7 +11,6 @@ export const get = async () => {
   logger.info('Fetching trainers');
   const data = await client.send(new ScanCommand({ TableName: TABLE }));
   const items = data.Items ? data.Items.map((i) => unmarshall(i)) : [];
-
   let trainers: Trainer[];
   if (items.length === 0) {
     trainers = [

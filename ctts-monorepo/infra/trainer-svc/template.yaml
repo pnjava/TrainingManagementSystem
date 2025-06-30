@@ -74,3 +74,4 @@ Outputs:
     Value: !Sub https://${TrainerApi}.execute-api.${AWS::Region}.amazonaws.com/dev
   TableName:
     Value: !Ref TrainerTable
+
