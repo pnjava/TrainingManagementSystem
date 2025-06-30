@@ -8,10 +8,13 @@
 
 ## Quick Start
 ```bash
-npm install -w ui
 npm install -w services/trainer
 npm install -w services/admin
 ```
+
+## UI Repository
+The frontend application is now maintained in a separate repository.
+Clone `ctts-ui` and follow its README for setup instructions.
 
 ## Seed Data
 Run:
