@@ -15,25 +15,24 @@ Globals:
     Timeout: 10
     Environment:
       Variables:
-        CLUSTER_ARN: !Ref TrainerCluster
-        SECRET_ARN: !Ref DbSecret
-        DB_NAME: ctts
+        TABLE: !Ref TrainerTable
 Resources:
-  DbSecret:
-    Type: AWS::SecretsManager::Secret
+  TrainerTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      GenerateSecretString:
-        SecretStringTemplate: '{"username":"masteruser"}'
-        GenerateStringKey: password
-  TrainerCluster:
-    Type: AWS::RDS::DBCluster
-    Properties:
-      Engine: aurora-postgresql
-      EngineMode: serverless
-      DatabaseName: ctts
-      MasterUsername: masteruser
-      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DbSecret}:SecretString:password}}'
-      EnableHttpEndpoint: true
+      TableName: TrainerTable
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+          Value: CDO
+        - Key: Compliance
+          Value: Sec530
+        - Key: PII
+          Value: No
   TrainerApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -53,10 +52,8 @@ Resources:
             Path: /trainers
             Method: get
       Policies:
-        - Statement:
-            Effect: Allow
-            Action: rds-data:ExecuteStatement
-            Resource: '*'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TrainerTable
   ApproveTrainerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -70,14 +67,11 @@ Resources:
             Path: /trainers/{id}/approve
             Method: put
       Policies:
-        - Statement:
-            Effect: Allow
-            Action: rds-data:ExecuteStatement
-            Resource: '*'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TrainerTable
 Outputs:
   ApiUrl:
     Value: !Sub https://${TrainerApi}.execute-api.${AWS::Region}.amazonaws.com/dev
-  ClusterArn:
-    Value: !Ref TrainerCluster
-  SecretArn:
-    Value: !Ref DbSecret
+  TableName:
+    Value: !Ref TrainerTable
+

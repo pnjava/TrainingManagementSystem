@@ -1,12 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { RDSDataClient, ExecuteStatementCommand } from '@aws-sdk/client-rds-data';
+import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { Logger } from '@aws-lambda-powertools/logger';
 
-const client = new RDSDataClient({});
+const client = new DynamoDBClient({});
 const logger = new Logger({ serviceName: 'approve-trainer' });
-const CLUSTER_ARN = process.env.CLUSTER_ARN as string;
-const SECRET_ARN = process.env.SECRET_ARN as string;
-const DB_NAME = process.env.DB_NAME as string;
+const TABLE = process.env.TABLE as string;
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   const id = event.pathParameters?.id || '';
@@ -15,15 +13,13 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   }
   const now = new Date().toISOString();
   await client.send(
-    new ExecuteStatementCommand({
-      resourceArn: CLUSTER_ARN,
-      secretArn: SECRET_ARN,
-      database: DB_NAME,
-      sql: 'UPDATE trainers SET approved=true, approved_at=:ts WHERE id=:id',
-      parameters: [
-        { name: 'ts', value: { stringValue: now } },
-        { name: 'id', value: { stringValue: id } },
-      ],
+    new PutItemCommand({
+      TableName: TABLE,
+      Item: {
+        pk: { S: id },
+        approved: { BOOL: true },
+        approvedAt: { S: now },
+      },
     }),
   );
   return {
